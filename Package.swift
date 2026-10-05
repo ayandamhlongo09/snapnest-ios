@@ -6,7 +6,8 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [.library(name: "CaptureCore", targets: ["CaptureCore"])],
     targets: [
-        .target(name: "CaptureCore"),
+        .systemLibrary(name: "CSQLite", path: "Sources/CSQLite"),
+        .target(name: "CaptureCore", dependencies: ["CSQLite"]),
         .testTarget(name: "CaptureCoreTests", dependencies: ["CaptureCore"])
     ]
 )
