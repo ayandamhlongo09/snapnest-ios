@@ -41,6 +41,7 @@ public actor QueueStore {
           message TEXT, image BLOB, size INTEGER NOT NULL
         );
         CREATE INDEX IF NOT EXISTS queue_due ON captures(state,next,created);
+        CREATE TABLE IF NOT EXISTS receipts (id TEXT PRIMARY KEY, digest TEXT NOT NULL);
         """
         guard sqlite3_exec(connection, schema, nil, nil, nil) == SQLITE_OK else {
             sqlite3_close(connection); throw CaptureError.database("schema")
@@ -166,5 +167,25 @@ public actor QueueStore {
         let s = try statement("PRAGMA integrity_check"); defer { sqlite3_finalize(s) }
         guard sqlite3_step(s) == SQLITE_ROW else { throw CaptureError.database("integrity") }
         return text(s, 0)
+    }
+    /// Used only by the separate on-disk mock endpoint database.
+    public func accept(id: UUID, digest: String) throws -> UploadReceipt {
+        try transaction {
+            let q = try statement("SELECT digest FROM receipts WHERE id=?"); defer { sqlite3_finalize(q) }; bind(id.uuidString, q, 1)
+            let result = sqlite3_step(q)
+            if result == SQLITE_ROW {
+                guard text(q, 0) == digest else { throw CaptureError.collision }
+            } else {
+                guard result == SQLITE_DONE else { throw CaptureError.database("receipt") }
+                let s = try statement("INSERT INTO receipts(id,digest) VALUES(?,?)"); defer { sqlite3_finalize(s) }
+                bind(id.uuidString, s, 1); bind(digest, s, 2); try done(s)
+            }
+            return UploadReceipt(id: id, digest: digest)
+        }
+    }
+    public func receiptCount() throws -> Int {
+        let s = try statement("SELECT COUNT(*) FROM receipts"); defer { sqlite3_finalize(s) }
+        guard sqlite3_step(s) == SQLITE_ROW else { throw CaptureError.database("count") }
+        return Int(sqlite3_column_int(s, 0))
     }
 }

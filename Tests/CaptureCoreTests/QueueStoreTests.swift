@@ -101,4 +101,15 @@ final class QueueStoreTests: XCTestCase, @unchecked Sendable {
         let items = try await store.items(); let summary = try await store.summary()
         XCTAssertEqual(items.map(\.id), [pendingID]); XCTAssertEqual(summary.bytes, 2)
     }
+    func testEndpointReturnsOriginalReceiptAcrossRelaunchAndRejectsChangedBytes() async throws {
+        let (store, url) = try database()
+        let id = UUID()
+        let first = try await store.accept(id: id, digest: "original")
+        let reopened = try QueueStore(url: url)
+        let repeatReceipt = try await reopened.accept(id: id, digest: "original")
+        XCTAssertEqual(first.id, repeatReceipt.id); XCTAssertEqual(first.digest, repeatReceipt.digest)
+        do { _ = try await reopened.accept(id: id, digest: "changed"); XCTFail("collision accepted") }
+        catch CaptureError.collision {}
+        let count = try await reopened.receiptCount(); XCTAssertEqual(count, 1)
+    }
 }

@@ -32,7 +32,7 @@ Define four states: `pending`, `uploading`, `uploaded`, and `failed`. Capture me
 A response must identify which capture was accepted and which image bytes it refers to. A retry after a lost response can otherwise create a duplicate.
 
 **Decision**
-Represent confirmation with an `UploadReceipt` containing the capture UUID and image digest. The later worker will validate both before marking a capture uploaded, and the mock receiver will deduplicate repeated requests. This step defines the receipt; it does not yet calculate digests or send requests.
+Represent confirmation with an `UploadReceipt` containing the capture UUID and image digest. The later worker will validate both before marking a capture uploaded, and the mock receiver will deduplicate repeated requests. The mock endpoint now calculates SHA-256 digests and records receipts. There is no delivery worker or live HTTP request yet.
 
 ## Retry policy
 
@@ -49,6 +49,21 @@ A captured photo must survive an app restart before delivery is attempted. “Sa
 
 **Decision**
 Store image bytes, UUID, capture type, timestamp, and pending state together in one SQLite transaction. `BEGIN IMMEDIATE` starts the write transaction; the capacity check and insert happen inside it; `COMMIT` completes the save. A failure rolls the transaction back. This avoids coordinating separate image files with metadata. A duplicate ID is rejected without overwriting the original capture. The existing tests verify reopened bytes/state and rollback. Process-kill validation will be introduced in its planned later step.
+
+The storage operation follows this path; camera/UI integration will call it in a later step.
+
+```mermaid
+flowchart TD
+    A[Image bytes and capture metadata] --> B{Valid payload size?}
+    B -->|No| R[Reject save]
+    B -->|Yes| C[Begin SQLite transaction]
+    C --> D{Within queue capacity?}
+    D -->|No| E[Roll back and report full]
+    D -->|Yes| F[Insert image and pending metadata together]
+    F --> G{Insert and commit succeed?}
+    G -->|No| H[Roll back and report failure]
+    G -->|Yes| I[Return saved capture UUID]
+```
 
 ## SQLite ownership and durability
 
@@ -97,3 +112,54 @@ Accepted photos no longer need their local image bytes, but removing sent histor
 
 **Decision**
 For an uploading row, the storage operation marks it uploaded and releases its image BLOB and logical byte count. Only the future worker may call this after validating a receipt; the store does not validate a receipt itself. Sent-history cleanup deletes only uploaded rows and runs VACUUM to reclaim database space, requiring temporary disk headroom. The existing test verifies pending IDs and bytes remain intact. The 10,000-record policy counts sent metadata until it is cleared.
+
+## Idempotent mock receiver
+
+**Concept**
+A receiver can accept an image even when its response never reaches the client. The client must be able to repeat the same request without creating a second accepted capture.
+
+**Decision**
+Use the existing in-app `MockEndpoint` behind an `UploadTransport` protocol. Calculate a SHA-256 digest of the delivered bytes and record the UUID/digest in SQLite. An atomic receipt transaction returns the same receipt for a repeated UUID and digest, and rejects the same UUID with different bytes. Receipts survive reopening; the existing test verifies persistence, deduplication, and collision rejection. This represents receiver acceptance in a permitted mock, not transmission to a real backend. When app integration arrives, receipts will use a database separate from the client's queue.
+
+The diagram shows receipt handling inside the mock endpoint. Its caller is not yet connected to an app upload worker.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Mock as Mock endpoint
+    participant DB as SQLite receipt store
+    Caller->>Mock: Upload UUID and image bytes
+    Mock->>Mock: Calculate SHA-256 digest
+    Mock->>DB: Accept UUID and digest in a transaction
+    alt UUID not yet accepted
+        DB->>DB: Insert and commit receipt
+        DB-->>Mock: New receipt
+    else Same UUID and digest
+        DB-->>Mock: Original receipt
+    else Same UUID with different digest
+        DB-->>Mock: Reject conflicting bytes
+    end
+    alt Accepted but response-loss simulation enabled
+        Mock-->>Caller: Confirmation interrupted
+    else Accepted and confirmation available
+        Mock-->>Caller: Receipt containing UUID and digest
+    else Conflicting bytes rejected
+        Mock-->>Caller: Collision error
+    end
+```
+
+## Failure simulation at the transport boundary
+
+**Concept**
+Testing delivery needs controlled failures, including the ambiguous case where acceptance succeeds but confirmation is lost.
+
+**Decision**
+Reuse the endpoint's existing configurable offline mode, request-drop percentage, latency, server errors, and response loss after acceptance. Each request snapshots its settings; task cancellation is checked before acceptance. Response-loss simulation commits the receipt and then throws, allowing the later worker tests to verify safe retries. These controls are not connected to a screen yet, and the failure scenarios will be exercised by the existing coordinator tests when that component is introduced.
+
+## Receipt retention
+
+**Concept**
+Deleting the client's sent history must not make a repeated request appear new to the receiver.
+
+**Decision**
+Keep mock receipts independently of capture-history cleanup and retain them indefinitely in this prototype. The receipt database stores IDs and digests, not image bytes. Its growth is an explicit limitation separate from the bounded image queue; a production receiver would need a retention and duplicate-window contract.
