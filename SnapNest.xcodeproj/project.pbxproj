@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A363655B7566F642F20A75C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6CDB10F641D664919B8A94 /* ContentView.swift */; };
+		86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA4796C84E34890AF2C66B /* CaptureModel.swift */; };
 		A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */; };
 		CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
 		EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1E26D19E15697BC47016779 /* CaptureCore */; };
@@ -16,6 +17,7 @@
 /* Begin PBXFileReference section */
 		2E6CDB10F641D664919B8A94 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		826C297A4FA8D450F13F75F9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		CCBA4796C84E34890AF2C66B /* CaptureModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CaptureModel.swift; sourceTree = "<group>"; };
 		E15BBA30D2D4BFDF962A285D /* SnapNest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnapNest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapNestApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -46,6 +48,7 @@
 			children = (
 				2E6CDB10F641D664919B8A94 /* ContentView.swift */,
 				F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */,
+				CCBA4796C84E34890AF2C66B /* CaptureModel.swift */,
 			);
 			name = App;
 			path = App;
@@ -148,6 +151,7 @@
 			files = (
 				5A363655B7566F642F20A75C /* ContentView.swift in Sources */,
 				A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */,
+				86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

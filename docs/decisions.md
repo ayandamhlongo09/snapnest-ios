@@ -103,7 +103,7 @@ Persist each failure message and next-attempt timestamp. Claims require both a d
 After interruption, an uploading row has no locally confirmed outcome. The receiver might already have accepted it, even though the client did not record confirmation.
 
 **Decision**
-Recover uploading rows to pending, clear their timing/message, and refund the interrupted attempt. Reuse the original UUID so the later idempotent receiver can recognise a repeated request. Do not change confirmed uploaded rows. The existing recovery test reopens the database, reclaims the same ID, and verifies confirmed rows remain uploaded. Lifecycle integration and remote deduplication are introduced later.
+Recover uploading rows to pending, clear their timing/message, and refund the interrupted attempt. Reuse the original UUID so the later idempotent receiver can recognise a repeated request. Do not change confirmed uploaded rows. The existing recovery test reopens the database, reclaims the same ID, and verifies confirmed rows remain uploaded. App lifecycle integration now invokes this recovery; the mock endpoint handles deduplication.
 
 ## Confirmed-upload cleanup
 
@@ -119,7 +119,7 @@ For an uploading row, the storage operation marks it uploaded and releases its i
 A receiver can accept an image even when its response never reaches the client. The client must be able to repeat the same request without creating a second accepted capture.
 
 **Decision**
-Use the existing in-app `MockEndpoint` behind an `UploadTransport` protocol. Calculate a SHA-256 digest of the delivered bytes and record the UUID/digest in SQLite. An atomic receipt transaction returns the same receipt for a repeated UUID and digest, and rejects the same UUID with different bytes. Receipts survive reopening; the existing test verifies persistence, deduplication, and collision rejection. This represents receiver acceptance in a permitted mock, not transmission to a real backend. When app integration arrives, receipts will use a database separate from the client's queue.
+Use the existing in-app `MockEndpoint` behind an `UploadTransport` protocol. Calculate a SHA-256 digest of the delivered bytes and record the UUID/digest in SQLite. An atomic receipt transaction returns the same receipt for a repeated UUID and digest, and rejects the same UUID with different bytes. Receipts survive reopening; the existing test verifies persistence, deduplication, and collision rejection. This represents receiver acceptance in a permitted mock, not transmission to a real backend. App startup now creates a receipt database separate from the client's queue.
 
 The diagram shows receipt handling inside the mock endpoint. The coordinator calls this transport; app UI integration is introduced later.
 
@@ -207,4 +207,49 @@ The diagram covers normal scheduling and outcomes. Failed captures at the attemp
 Pausing while a request is active must leave a recoverable durable state. A confirmed response arriving during cancellation must not be discarded.
 
 **Decision**
-Pause disables and cancels the worker, then awaits its completion before recovery or new work. Request cancellation recovers unconfirmed uploading rows to pending. A matching receipt received despite cancellation is still honoured as confirmed success. Manual retry pauses the current worker to interrupt backoff, publishes the changed state, then resumes if delivery was enabled. Storage-worker errors are exposed through `lastError` while preserving the last durable state. The existing pause/resume test verifies the same capture ID is eventually sent. Foreground/connectivity integration is still a later app step.
+Pause disables and cancels the worker, then awaits its completion before recovery or new work. Request cancellation recovers unconfirmed uploading rows to pending. A matching receipt received despite cancellation is still honoured as confirmed success. Manual retry pauses the current worker to interrupt backoff, publishes the changed state, then resumes if delivery was enabled. Storage-worker errors are exposed through `lastError` while preserving the last durable state. The existing pause/resume test verifies the same capture ID is eventually sent. Foreground/connectivity integration now uses these pause and recovery operations.
+
+## App model and startup
+
+**Concept**
+The UI needs one long-lived owner for storage, delivery, and displayed state. Redrawing a view must not create another queue worker.
+
+**Decision**
+Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration for subsequent screens, but the current interface remains the scaffold. The storage folder and monitor label use the SnapNest name.
+
+## Foreground and connectivity gates
+
+**Concept**
+A durable queue can survive interruption without requiring the app to execute continuously in the background. Demo offline mode and actual network-path availability are separate conditions.
+
+**Decision**
+Observe SwiftUI scene activity and `NWPathMonitor`. Enable delivery only when the app is active, the path is satisfied, and demo offline is off. Otherwise pause the worker. On foreground entry, pause and await cleanup before recovering uploading rows, so recovery cannot steal an active worker's claim. Then re-evaluate delivery. There is no promise of continued sending while suspended or force quit; work resumes when the app is active again. A satisfied path is not proof of internet or server reachability, and the endpoint is still an in-app mock.
+
+```mermaid
+flowchart TD
+    A[Startup or foreground entry] --> B[Pause worker before interrupted-row recovery]
+    B --> C[Recover unconfirmed uploads and refresh state]
+    C --> D[Evaluate activity and connectivity]
+    E[Network path or demo setting changes] --> D
+    D --> F{Active, connected, and demo offline off?}
+    F -->|Yes| G[Resume one upload worker]
+    F -->|No| H[Pause worker and preserve queue]
+```
+
+The existing coordinator tests simulate pause/resume and verify durable recovery. The native build verifies this integration compiles; physical Wi-Fi interruption and scene changes still need native/manual validation.
+
+## Renewing network monitoring
+
+**Concept**
+A stale disconnected report can leave saved photos waiting after connectivity returns. Callbacks from an old monitor must not overwrite a newer monitor's state.
+
+**Decision**
+Reuse the working solution's monitor renewal on foreground entry, disabling demo offline, and the model's Check connection action. Cancel the old monitor and increment a generation token; ignore its later callbacks. Hop to the main actor before publishing connectivity and re-evaluating delivery. Do not force an online state. The Check connection button will be connected in the queue-interface step. The original host Wi-Fi failure was not reproduced under automated control, so this remains a recovery safeguard with an explicit manual-validation gap.
+
+## Coherent UI refreshes
+
+**Concept**
+An older asynchronous refresh can finish after a newer page or state request and overwrite it. Publishing counts before history arrives can also briefly show inconsistent values.
+
+**Decision**
+Collect summary, paged metadata, receipt count, and coordinator errors before publishing them together on the main actor. A refresh generation token prevents older overlapping reads from replacing a newer result. This retains the existing solution's safeguard without introducing a new UI or production refactor.
