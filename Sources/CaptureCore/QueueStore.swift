@@ -120,6 +120,48 @@ public actor QueueStore {
         guard sqlite3_step(s) == SQLITE_ROW, let bytes = sqlite3_column_blob(s, 0) else { throw CaptureError.invalidImage }
         return Data(bytes: bytes, count: Int(sqlite3_column_bytes(s, 0)))
     }
+
+    public func claim(now: Date, maximumAttempts: Int) throws -> UploadPayload? {
+        try transaction {
+            let s = try statement("SELECT id,kind,image FROM captures WHERE state IN ('pending','failed') AND attempts<? AND next<=? ORDER BY created,id LIMIT 1")
+            defer { sqlite3_finalize(s) }; sqlite3_bind_int(s, 1, Int32(maximumAttempts)); sqlite3_bind_double(s, 2, now.timeIntervalSince1970)
+            let code = sqlite3_step(s)
+            if code == SQLITE_DONE { return nil }
+            guard code == SQLITE_ROW, let id = UUID(uuidString: text(s, 0)), let kind = CaptureKind(rawValue: text(s, 1)),
+                  let bytes = sqlite3_column_blob(s, 2) else { throw CaptureError.database("claim") }
+            let payload = UploadPayload(id: id, kind: kind, image: Data(bytes: bytes, count: Int(sqlite3_column_bytes(s, 2))))
+            let u = try statement("UPDATE captures SET state='uploading',attempts=attempts+1,message=NULL WHERE id=?")
+            defer { sqlite3_finalize(u) }; bind(id.uuidString, u, 1); try done(u)
+            return payload
+        }
+    }
+    public func markUploaded(id: UUID) throws {
+        let s = try statement("UPDATE captures SET state='uploaded',image=NULL,size=0,message=NULL WHERE id=? AND state='uploading'")
+        defer { sqlite3_finalize(s) }; bind(id.uuidString, s, 1); try done(s)
+    }
+    public func markFailed(id: UUID, message: String, now: Date, policy: RetryPolicy) throws {
+        let s = try statement("UPDATE captures SET state='failed',message=?,next=? WHERE id=? AND state='uploading'")
+        defer { sqlite3_finalize(s) }
+        let q = try statement("SELECT attempts FROM captures WHERE id=?"); defer { sqlite3_finalize(q) }
+        bind(id.uuidString, q, 1)
+        guard sqlite3_step(q) == SQLITE_ROW else { throw CaptureError.database("missing attempt") }
+        bind(message, s, 1); sqlite3_bind_double(s, 2, now.addingTimeInterval(policy.delay(after: Int(sqlite3_column_int(q, 0)))).timeIntervalSince1970)
+        bind(id.uuidString, s, 3); try done(s)
+    }
+    public func retry(id: UUID) throws {
+        let s = try statement("UPDATE captures SET state='pending',attempts=0,next=0,message=NULL WHERE id=? AND state='failed'")
+        defer { sqlite3_finalize(s) }; bind(id.uuidString, s, 1); try done(s)
+    }
+    public func recoverInterrupted() throws {
+        try execute("UPDATE captures SET state='pending',attempts=MAX(0,attempts-1),next=0,message=NULL WHERE state='uploading'")
+    }
+    public func nextDue(maximumAttempts: Int) throws -> Date? {
+        let s = try statement("SELECT MIN(next) FROM captures WHERE state IN ('pending','failed') AND attempts<?")
+        defer { sqlite3_finalize(s) }; sqlite3_bind_int(s, 1, Int32(maximumAttempts))
+        guard sqlite3_step(s) == SQLITE_ROW else { throw CaptureError.database("next") }
+        return sqlite3_column_type(s, 0) == SQLITE_NULL ? nil : Date(timeIntervalSince1970: sqlite3_column_double(s, 0))
+    }
+    public func clearUploadedHistory() throws { try execute("DELETE FROM captures WHERE state='uploaded'; VACUUM;") }
     public func integrityCheck() throws -> String {
         let s = try statement("PRAGMA integrity_check"); defer { sqlite3_finalize(s) }
         guard sqlite3_step(s) == SQLITE_ROW else { throw CaptureError.database("integrity") }

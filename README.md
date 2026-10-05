@@ -4,7 +4,7 @@ A native iOS project built with Swift and SwiftUI.
 
 ## Current stage
 
-The runnable SwiftUI scaffold includes a local `CaptureCore` package with capture models and atomic SQLite storage. Saved image bytes and metadata can be reopened together. Camera/library capture, upload state transitions, and delivery are not connected yet; the screen remains the scaffold.
+The runnable SwiftUI scaffold includes a local `CaptureCore` package with atomic SQLite storage and queue management: exclusive upload claims, persisted attempts and retry times, interrupted-upload recovery, manual retry, and sent-history cleanup. Storage bounds and metadata pagination are verified. Camera/library capture and the delivery worker are not connected yet; the screen remains the scaffold.
 
 ## Run
 
@@ -20,4 +20,4 @@ See [Concepts and decisions](docs/decisions.md) for plain-language explanations 
 
 ## Tests
 
-Run `swift test` from the repository root. The current tests cover exponential retry delay, reopening committed image bytes and pending state, duplicate-save rollback, invalid/oversized input rejection, and byte-capacity rejection while preserving an existing capture.
+Run `swift test` from the repository root. The current tests cover exponential retry delay, atomic persistence and rollback, input and capacity limits, the 10,000-record boundary and pagination, exclusive claims, interrupted-upload recovery, persisted retry timing, manual retry with the same capture ID, and sent-history cleanup that preserves pending captures.
