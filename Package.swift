@@ -8,6 +8,7 @@ let package = Package(
     targets: [
         .systemLibrary(name: "CSQLite", path: "Sources/CSQLite"),
         .target(name: "CaptureCore", dependencies: ["CSQLite"]),
+        .executableTarget(name: "QueueProbe", dependencies: ["CaptureCore"]),
         .testTarget(name: "CaptureCoreTests", dependencies: ["CaptureCore"])
     ]
 )

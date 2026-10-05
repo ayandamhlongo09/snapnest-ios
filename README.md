@@ -62,3 +62,12 @@ The library test has an iOS 27 coordinate fallback for the first tile when the s
 ![SnapNest at maximum accessibility text size](docs/images/maximum-text.png)
 
 Progress evidence from the successful maximum Dynamic Type UI test. Choose photo remains reachable after scrolling. On 5 October 2026, all 20 core tests and all 3 native UI tests passed; [Validation](docs/Validation.md) records the scope and remaining gaps.
+
+## Process-kill persistence check
+
+```sh
+swift build --product QueueProbe
+python3 scripts/crash_stress.py
+```
+
+The macOS probe writes 1 MiB captures through the real QueueStore. The script kills it at 12 different delays, reopens each temporary database, and checks integrity, acknowledged IDs, image lengths, sizes, and pending state. All 12 runs passed on 5 October 2026. This validates the shared persistence implementation under process termination; it does not establish the exact interruption point or physical iOS force-quit behaviour. See [Validation](docs/Validation.md).

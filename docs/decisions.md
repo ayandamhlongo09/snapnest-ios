@@ -384,3 +384,26 @@ sequenceDiagram
 ```
 
 This scenario relaunches after confirmation. Interrupted-upload recovery is covered by core tests; process-kill stress validation is a separate next step. Maximum-text reachability does not establish VoiceOver or physical-camera behaviour.
+
+## Abrupt process termination evidence
+
+**Concept**
+
+A normal reopen test does not exercise an operating system terminating the writer while it is working. Once save reports success, the capture must remain recoverable.
+
+**Decision**
+
+Reuse the existing QueueProbe executable and crash stress script. The probe saves 1 MiB captures through QueueStore and prints UUIDs only after save returns. The script kills that process at 12 delays, reopens temporary databases, and checks SQLite integrity, acknowledged IDs, image length/size, and pending state. Keep this as a macOS developer validation tool with no production app changes. Describe its timing and platform limitations explicitly; the script does not choose the exact commit instruction or compare every image byte.
+
+```mermaid
+flowchart TD
+    A[Start real QueueStore writer] --> B[Save 1 MiB capture]
+    B --> C[Commit then print saved UUID]
+    C --> B
+    A --> D[Wait for selected delay]
+    D --> E[Kill writer process]
+    E --> F[Reopen database]
+    F --> G[Check integrity and acknowledged IDs]
+    G --> H[Check image lengths sizes and pending states]
+    H --> I[Repeat across 12 runs]
+```
