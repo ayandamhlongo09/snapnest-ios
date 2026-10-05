@@ -215,7 +215,7 @@ Pause disables and cancels the worker, then awaits its completion before recover
 The UI needs one long-lived owner for storage, delivery, and displayed state. Redrawing a view must not create another queue worker.
 
 **Decision**
-Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration. Capture controls now call the save operation; queue history and reviewer controls arrive in subsequent steps. The storage folder and monitor label use the SnapNest name.
+Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration. Capture controls call the save operation, and queue history now displays model state. Reviewer controls arrive in the next step. The storage folder and monitor label use the SnapNest name.
 
 ## Foreground and connectivity gates
 
@@ -244,7 +244,7 @@ The existing coordinator tests simulate pause/resume and verify durable recovery
 A stale disconnected report can leave saved photos waiting after connectivity returns. Callbacks from an old monitor must not overwrite a newer monitor's state.
 
 **Decision**
-Reuse the working solution's monitor renewal on foreground entry, disabling demo offline, and the model's Check connection action. Cancel the old monitor and increment a generation token; ignore its later callbacks. Hop to the main actor before publishing connectivity and re-evaluating delivery. Do not force an online state. The Check connection button will be connected in the queue-interface step. The original host Wi-Fi failure was not reproduced under automated control, so this remains a recovery safeguard with an explicit manual-validation gap.
+Reuse the working solution's monitor renewal on foreground entry, disabling demo offline, and the model's Check connection action. Cancel the old monitor and increment a generation token; ignore its later callbacks. Hop to the main actor before publishing connectivity and re-evaluating delivery. Do not force an online state. The Check connection button is now connected in the queue interface. The original host Wi-Fi failure was not reproduced under automated control, so this remains a recovery safeguard with an explicit manual-validation gap.
 
 ## Coherent UI refreshes
 
@@ -293,3 +293,32 @@ The UI must distinguish preparation, an uncommitted save, and a durable saved ca
 
 **Decision**
 Reuse the existing two-step capture controls, busy state, and unsaved-image retry. Disable competing capture actions while preparing/saving or retaining an unsaved capture. Report saved only after `CaptureModel.save` returns success. Retain prepared bytes in memory after a save failure until another save succeeds; this is not durable protection against a process kill. Request a short UIKit background task around preparation/save for ordinary background transitions, without promising force-quit survival before commit. The native build checks compilation; the existing native picker/UI tests are introduced in the later validation step.
+
+## Queue interface and status feedback
+
+**Concept**
+Users need to distinguish a safely saved photo from a confirmed upload, understand what is waiting, and recover failed delivery without creating another capture. Status must not depend on colour alone.
+
+**Decision**
+Reuse the existing history cards with text and icons for Saved / Waiting to send, Saved / Sending, Sent, and Saved / Needs another try. Show aggregate waiting/sent counts. Failed cards explain whether automatic retries remain or manual Retry is required; Retry uses the original capture ID. Display connectivity feedback and Check connection when the network monitor reports disconnection. Busy and unsaved-image feedback remain in the capture area. The layout scrolls and uses scalable text; full native UI and maximum-text validation arrive in the planned validation step.
+
+```mermaid
+flowchart TD
+    A[Queue model refresh] --> B[Waiting and sent counts]
+    A --> C[Current page of metadata cards]
+    C --> D{Stored state}
+    D -->|pending| E[Saved / Waiting to send]
+    D -->|uploading| F[Saved / Sending]
+    D -->|uploaded| G[Sent]
+    D -->|failed| H[Saved / Needs another try]
+    H --> I[Retry using the same UUID]
+    I --> J[Reset failed item and evaluate delivery]
+```
+
+## Pagination and sent-history controls
+
+**Concept**
+A 10,000-record queue should remain navigable without loading all records or image bytes into the interface. Users also need to free record capacity without deleting waiting captures.
+
+**Decision**
+Reuse the existing 50-record metadata pages with Previous photos and More photos controls. No thumbnails are decoded. Expose Remove sent photos from this list when sent history exists; the model invokes the store's uploaded-only cleanup and resets to the first page. This leaves pending/failed images and receiver receipts intact. Existing core tests verify the final capacity page and cleanup behaviour; the current native build verifies the controls compile.

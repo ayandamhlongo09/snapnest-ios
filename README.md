@@ -4,7 +4,7 @@ A native iOS project built with Swift and SwiftUI.
 
 ## Current stage
 
-The app now supports native camera and photo-library capture, image preparation, and saving before delivery. A shared core package provides SQLite persistence, bounded queue management, idempotent mock receipts, and serial automatic retries. Startup, lifecycle, and connectivity are connected. The capture screen is usable; the full queue-status/history interface and reviewer failure controls arrive in subsequent steps.
+The app now supports native camera and photo-library capture, image preparation, and saving before delivery. A shared core package provides SQLite persistence, bounded queue management, idempotent mock receipts, and serial automatic retries. Startup, lifecycle, and connectivity are connected. The capture and queue interface now shows saved items, waiting/sent counts, upload states, manual Retry, paginated history, and sent-history cleanup. Disconnection feedback includes Check connection. Reviewer failure controls arrive in the next step.
 
 ## Run
 
@@ -30,3 +30,7 @@ Delivery runs while the app is active, the OS reports a satisfied network path, 
 ![SnapNest capture screen](docs/images/capture-screen.png)
 
 Capture screen after adding native photo capture controls. Checked on the iPhone 18 Pro Max simulator, iOS 27. This shows the screen rendered; end-to-end picker/upload validation and physical camera validation remain outstanding.
+
+![SnapNest queue interface](docs/images/queue-screen.png)
+
+Queue interface after adding history and status controls, shown with an empty queue on the iPhone 18 Pro Max simulator, iOS 27. Build and launch passed; this screenshot does not validate populated states or the end-to-end upload flow.
