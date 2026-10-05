@@ -10,6 +10,7 @@
 		5A363655B7566F642F20A75C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6CDB10F641D664919B8A94 /* ContentView.swift */; };
 		A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */; };
 		CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
+		EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1E26D19E15697BC47016779 /* CaptureCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */,
+				EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +92,9 @@
 			dependencies = (
 			);
 			name = SnapNest;
+			packageProductDependencies = (
+				A1E26D19E15697BC47016779 /* CaptureCore */,
+			);
 			productName = SnapNest;
 			productReference = E15BBA30D2D4BFDF962A285D /* SnapNest.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +118,9 @@
 			);
 			mainGroup = 9C85692F954277C8A8070622;
 			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				26AB5B1CC903015B3783B0B3 /* XCLocalSwiftPackageReference "." */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7C3AB64C8CCB7A11F0E6E662 /* Products */;
 			projectDirPath = "";
@@ -328,6 +336,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		26AB5B1CC903015B3783B0B3 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1E26D19E15697BC47016779 /* CaptureCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CaptureCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0853D325F1E22839E7BF6261 /* Project object */;
 }
