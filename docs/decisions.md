@@ -154,7 +154,7 @@ sequenceDiagram
 Testing delivery needs controlled failures, including the ambiguous case where acceptance succeeds but confirmation is lost.
 
 **Decision**
-Reuse the endpoint's existing configurable offline mode, request-drop percentage, latency, server errors, and response loss after acceptance. Each request snapshots its settings; task cancellation is checked before acceptance. Response-loss simulation commits the receipt and then throws, allowing the worker tests to verify safe retries. These controls are not connected to a screen yet, and the existing coordinator tests now exercise the failure scenarios.
+Reuse the endpoint's existing configurable offline mode, request-drop percentage, latency, server errors, and response loss after acceptance. Each request snapshots its settings; task cancellation is checked before acceptance. Response-loss simulation commits the receipt and then throws, allowing the worker tests to verify safe retries. The controls are now connected to the reviewer screen, and the existing coordinator tests exercise the failure scenarios.
 
 ## Receipt retention
 
@@ -215,7 +215,7 @@ Pause disables and cancels the worker, then awaits its completion before recover
 The UI needs one long-lived owner for storage, delivery, and displayed state. Redrawing a view must not create another queue worker.
 
 **Decision**
-Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration. Capture controls call the save operation, and queue history now displays model state. Reviewer controls arrive in the next step. The storage folder and monitor label use the SnapNest name.
+Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration. Capture controls call the save operation, and queue history now displays model state. Reviewer controls are now connected. The storage folder and monitor label use the SnapNest name.
 
 ## Foreground and connectivity gates
 
@@ -322,3 +322,37 @@ A 10,000-record queue should remain navigable without loading all records or ima
 
 **Decision**
 Reuse the existing 50-record metadata pages with Previous photos and More photos controls. No thumbnails are decoded. Expose Remove sent photos from this list when sent history exists; the model invokes the store's uploaded-only cleanup and resets to the first page. This leaves pending/failed images and receiver receipts intact. Existing core tests verify the final capacity page and cleanup behaviour; the current native build verifies the controls compile.
+
+## Runtime reviewer controls
+
+**Concept**
+Reviewers need to trigger unreliable delivery without rebuilding the app or depending on an actual server failure. They also need evidence that ambiguous success does not create duplicate acceptance.
+
+**Decision**
+Reuse the existing Demo controls sheet, opened through the sliders button. Toggles and sliders update the model's endpoint settings at runtime. Offline cancels the worker; other settings are snapshotted by the next request. Expose the durable unique-acceptance count and explain the duplicate contract. A separate storage section shows queue limits and offers uploaded-only history cleanup. Failure settings live in memory and reset on relaunch; captures and receipt evidence remain on disk. These are mock request outcomes, not packet-level faults or changes to real Wi-Fi speed.
+
+```mermaid
+flowchart TD
+    A[Reviewer changes toggle or slider] --> B[Model updates endpoint settings]
+    B --> C{Delivery allowed by activity and connectivity?}
+    C -->|No| D[Pause worker and preserve queue]
+    C -->|Yes| E[Resume serial worker]
+    E --> F[Endpoint snapshots settings for next request]
+    F --> G[Configured delay and cancellation check]
+    G --> H{Offline, drop, or server error?}
+    H -->|Yes| I[Fail before acceptance]
+    H -->|No| J[Commit or reuse receipt]
+    J --> K{Lose confirmation enabled?}
+    K -->|Yes| L[Report interrupted confirmation]
+    K -->|No| M[Return receipt]
+```
+
+The screen's Go offline gate normally pauses delivery before a new request reaches the endpoint; its transport-level offline setting is also exercised directly by core tests. A lost confirmation leaves a durable receipt for the next attempt to reuse.
+
+## Distinguishing simulated and real disconnection
+
+**Concept**
+Turning demo offline off does not establish real connectivity. A generic disconnected banner can obscure which gate is preventing delivery.
+
+**Decision**
+Reuse the existing separate explanations: demo offline asks the user to turn off the demo switch, while an unsatisfied network path shows No connection and Check connection. Monitor renewal requests a fresh report without pretending the device is online. The original real host Wi-Fi interruption remains a manual-validation gap; a successful demo toggle test is not proof that scenario is resolved.

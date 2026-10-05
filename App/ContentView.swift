@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var capturedKind: CaptureKind = .document
     @State private var library = false
     @State private var camera = false
+    @State private var controls = false
     @State private var preparing = false
     @State private var unsaved: Data?
     @State private var unsavedKind: CaptureKind = .document
@@ -18,9 +19,9 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Save your photo").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                     Text("Your photo stays on this phone until it is sent.").font(.body)
-                    if !model.connected {
+                    if !model.connected || model.offline {
                         VStack(alignment: .leading, spacing: 12) {
-                            Label("No connection. Photos will send when you are back online.", systemImage: "wifi.slash")
+                            Label(model.offline ? "Demo offline mode is on. Turn it off in Demo controls to send photos." : "No connection. Photos will send when you are back online.", systemImage: "wifi.slash")
                                 .font(.headline)
                             if !model.offline {
                                 Button("Check connection") { model.checkConnection() }
@@ -96,12 +97,17 @@ struct ContentView: View {
                 }.padding(20)
             }
             .navigationTitle("SnapNest").navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) {
+                Button { controls = true } label: { Image(systemName: "slider.horizontal.3") }
+                    .accessibilityLabel("Demo controls")
+            } }
             .sheet(isPresented: $camera) {
                 ImagePicker(kind: capturedKind, sourceType: .camera) { data in
                     camera = false
                     if let data { Task { await prepareAndSave(data, kind: capturedKind) } }
                 }.ignoresSafeArea()
             }
+            .sheet(isPresented: $controls) { DemoControls(model: model) }
             .sheet(isPresented: $library) {
                 ImagePicker(kind: capturedKind, sourceType: .photoLibrary) { data in
                     library = false
@@ -138,5 +144,45 @@ struct ContentView: View {
     }
     private func stateIcon(_ state: UploadState) -> String {
         switch state { case .pending: "clock"; case .uploading: "arrow.up.circle"; case .uploaded: "checkmark.circle.fill"; case .failed: "exclamationmark.arrow.circlepath" }
+    }
+}
+
+struct DemoControls: View {
+    @ObservedObject var model: CaptureModel
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Break delivery") {
+                    Toggle("Go offline", isOn: $model.offline)
+                    Toggle("Server errors (503)", isOn: $model.serverErrors)
+                    Toggle("Lose response after acceptance", isOn: $model.loseConfirmation)
+                    VStack(alignment: .leading) {
+                        Text("Drop uploads: \(Int(model.dropPercent))%")
+                        Slider(value: $model.dropPercent, in: 0...100, step: 10).accessibilityLabel("Drop upload percentage")
+                    }
+                    VStack(alignment: .leading) {
+                        Text("Delay: \(Int(model.latency)) seconds")
+                        Slider(value: $model.latency, in: 0...15, step: 1).accessibilityLabel("Upload delay")
+                    }
+                    Text("Controls apply to the next request. Offline cancels the current request. Real connectivity changes also pause delivery.")
+                }
+                Section("Endpoint evidence") {
+                    Text("\(model.accepted) unique photos accepted")
+                    Text("Repeat requests with the same ID and image return the original receipt. Changed image bytes are rejected.")
+                }
+                Section("Storage") {
+                    Text("Maximum 10,000 records and 512 MiB of waiting photos. Sent image bytes are removed after confirmation.")
+                    Button("Clear sent history") { Task { await model.clearSent() } }
+                    Text("Waiting photos are kept. Endpoint receipts stay for duplicate checks.")
+                }
+            }.navigationTitle("Demo controls")
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+                .onChange(of: model.offline) { _, _ in Task { await model.updateDelivery() } }
+                .onChange(of: model.serverErrors) { _, _ in Task { await model.updateDelivery() } }
+                .onChange(of: model.loseConfirmation) { _, _ in Task { await model.updateDelivery() } }
+                .onChange(of: model.dropPercent) { _, _ in Task { await model.updateDelivery() } }
+                .onChange(of: model.latency) { _, _ in Task { await model.updateDelivery() } }
+        }
     }
 }
