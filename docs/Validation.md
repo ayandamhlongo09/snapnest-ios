@@ -53,3 +53,11 @@ On 5 October 2026, `swift build --product QueueProbe` succeeded and `python3 scr
 | 12 | 29 | 29 |
 
 Every acknowledged ID survived, all checked rows had a 1 MiB image/size and pending state, and all integrity checks passed. The first run ended before any acknowledged save. Timing is nondeterministic; this does not prove termination at a particular transaction instruction. Image contents are not compared byte for byte by this stress script. It runs on macOS using the shared store, not inside a physical iOS app. No production app or core persistence behaviour changed.
+
+## SnapNest demonstration recording
+
+`demo/SnapNest-demo.mov` is 25.9 seconds long, exported from a 38.99-second simulator recording of the passing native capture/reconnect/relaunch UI test on 5 October 2026. Only initial test setup time and the trailing fraction of a second were trimmed; the remaining flow is continuous at its original speed. Sampled frames were inspected for the SnapNest interface, native library selection, reviewer controls, and sent state.
+
+The recording begins with four existing accepted items, then increases to five for the selected synthetic image. The test verifies the count stays five after relaunch. Existing sample photos/history remain visible; this is not a fresh-install recording. The movie records an in-app mock, not live server delivery or process termination during a write.
+
+The existing record, inspect, trim, and submission packaging helpers are adapted to SnapNest. The recording test and video helper compilation succeeded. The package helper must run after the final files are committed so that the tracked-file archive includes the movie and final documentation. No final submission archive has been generated at this review stage.

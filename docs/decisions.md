@@ -407,3 +407,22 @@ flowchart TD
     G --> H[Check image lengths sizes and pending states]
     H --> I[Repeat across 12 runs]
 ```
+
+## Demonstration and submission artifacts
+
+**Concept**
+
+A short recording makes the implemented flow reviewable, while a source archive preserves the code and its incremental Git history. Explanations also need to state the limits of the evidence.
+
+**Decision**
+
+Reuse the existing native UI recording, frame inspection, trimming, and tracked-source packaging helpers with SnapNest names. Record the actual passing test and trim setup time only; keep the movie under 60 seconds. Keep raw movies and diagnostics local. Preserve selected stage screenshots and provide the Flutter-to-Swift walkthrough for follow-up preparation. Generate the archive after the final reviewed commit so its tracked-file list includes the final artifacts.
+
+```mermaid
+flowchart LR
+    A[Passing native UI flow] --> B[Simulator recording]
+    B --> C[Inspect frames and trim setup]
+    C --> D[Review demo and documents]
+    D --> E[Approved final commit]
+    E --> F[Archive tracked files and Git history]
+```
