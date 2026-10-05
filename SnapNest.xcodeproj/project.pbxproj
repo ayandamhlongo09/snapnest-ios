@@ -7,17 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		195A6D7AA80742FF44E3A2A8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
 		5A363655B7566F642F20A75C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6CDB10F641D664919B8A94 /* ContentView.swift */; };
 		86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA4796C84E34890AF2C66B /* CaptureModel.swift */; };
+		8BA0B0A8EC7DB46F239DCA40 /* SnapNestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9724C4D9EC8576CBC6B71869 /* SnapNestUITests.swift */; };
 		A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */; };
 		CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
 		D8EDEBA3A728D0A5AFBD941D /* ImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */; };
 		EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1E26D19E15697BC47016779 /* CaptureCore */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9E131D3646E60FF5A589D70D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0853D325F1E22839E7BF6261 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BD8E46AB09EEEDAB3F5FCFB0;
+			remoteInfo = SnapNest;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2E6CDB10F641D664919B8A94 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		826C297A4FA8D450F13F75F9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		9724C4D9EC8576CBC6B71869 /* SnapNestUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapNestUITests.swift; sourceTree = "<group>"; };
+		B5B47A51CC8A3072148469E3 /* SnapNestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapNestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCBA4796C84E34890AF2C66B /* CaptureModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CaptureModel.swift; sourceTree = "<group>"; };
 		E15BBA30D2D4BFDF962A285D /* SnapNest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnapNest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageCapture.swift; sourceTree = "<group>"; };
@@ -31,6 +45,14 @@
 			files = (
 				CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */,
 				EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB560819302FA05384FAAEDA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				195A6D7AA80742FF44E3A2A8 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				E15BBA30D2D4BFDF962A285D /* SnapNest.app */,
+				B5B47A51CC8A3072148469E3 /* SnapNestUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -73,18 +96,46 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
+		883BD89B54BF6146B58B4E28 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				9724C4D9EC8576CBC6B71869 /* SnapNestUITests.swift */,
+			);
+			name = UITests;
+			path = UITests;
+			sourceTree = "<group>";
+		};
 		9C85692F954277C8A8070622 = {
 			isa = PBXGroup;
 			children = (
 				7C3AB64C8CCB7A11F0E6E662 /* Products */,
 				0C6F08F23D42F25654E5BB37 /* Frameworks */,
 				7A92E8B7F5227272FCBFD210 /* App */,
+				883BD89B54BF6146B58B4E28 /* UITests */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		77C8798EECE06B7F1C5C1DCD /* SnapNestUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82F174283EB23EFB3C08CD5F /* Build configuration list for PBXNativeTarget "SnapNestUITests" */;
+			buildPhases = (
+				1B1B43A8CB8DDDF28EDE3D2A /* Sources */,
+				FB560819302FA05384FAAEDA /* Frameworks */,
+				17227D2EED1C526D7E4ED5B7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AF1AF41CF33B75ED59F8D019 /* PBXTargetDependency */,
+			);
+			name = SnapNestUITests;
+			productName = SnapNestUITests;
+			productReference = B5B47A51CC8A3072148469E3 /* SnapNestUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		BD8E46AB09EEEDAB3F5FCFB0 /* SnapNest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2DD653F4090925542F82FFF5 /* Build configuration list for PBXNativeTarget "SnapNest" */;
@@ -133,11 +184,19 @@
 			projectRoot = "";
 			targets = (
 				BD8E46AB09EEEDAB3F5FCFB0 /* SnapNest */,
+				77C8798EECE06B7F1C5C1DCD /* SnapNestUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		17227D2EED1C526D7E4ED5B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		70CE87C009C1367237CE03E9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +207,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1B1B43A8CB8DDDF28EDE3D2A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BA0B0A8EC7DB46F239DCA40 /* SnapNestUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F1FBF994AF8CFA31C9C8FBAC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -161,7 +228,30 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		AF1AF41CF33B75ED59F8D019 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SnapNest;
+			target = BD8E46AB09EEEDAB3F5FCFB0 /* SnapNest */;
+			targetProxy = 9E131D3646E60FF5A589D70D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0842FAFB67B1CEF6072FA6B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayanda.SnapNest.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = SnapNest;
+			};
+			name = Debug;
+		};
 		3AFBF219F508FA8725B3B2C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -222,6 +312,21 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
+		};
+		3B2A1223E63ADE0CE1B5ABD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ayanda.SnapNest.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = SnapNest;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		A1455291EFA1188A19397C25 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -334,6 +439,15 @@
 			buildConfigurations = (
 				A1455291EFA1188A19397C25 /* Release */,
 				CD37519AD73B581B4703C07D /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82F174283EB23EFB3C08CD5F /* Build configuration list for PBXNativeTarget "SnapNestUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B2A1223E63ADE0CE1B5ABD8 /* Release */,
+				0842FAFB67B1CEF6072FA6B9 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

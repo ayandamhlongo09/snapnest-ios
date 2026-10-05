@@ -356,3 +356,31 @@ Turning demo offline off does not establish real connectivity. A generic disconn
 
 **Decision**
 Reuse the existing separate explanations: demo offline asks the user to turn off the demo switch, while an unsatisfied network path shows No connection and Check connection. Monitor renewal requests a fresh report without pretending the device is online. The original real host Wi-Fi interruption remains a manual-validation gap; a successful demo toggle test is not proof that scenario is resolved.
+
+## Native UI validation and synthetic evidence
+
+**Concept**
+
+Core tests establish storage and delivery contracts, while native UI tests check that a user can reach those behaviours through the real SwiftUI controls and system photo picker.
+
+**Decision**
+
+Include the existing three XCTest UI scenarios in the shared Xcode scheme: capture while demo offline, resume before relaunch and preserve the acceptance count after relaunch; toggle demo offline repeatedly; and reach Choose photo at maximum Dynamic Type. Use the synthetic document fixture without personal identity data. The picker runs in a separate system process; prefer its accessible photo element, with the existing inspected iOS 27 first-tile fallback when the grid is absent. Keep result bundles local and publish only selected screenshots and accurate validation notes. This adds test configuration and evidence without changing application behaviour.
+
+```mermaid
+sequenceDiagram
+    participant Test as Native UI test
+    participant App as SnapNest
+    participant Picker as System photo picker
+    participant Endpoint as Mock endpoint
+    Test->>App: Enable demo offline
+    Test->>Picker: Select synthetic photo
+    Picker->>App: Return image
+    App->>App: Prepare and save pending capture
+    Test->>App: Disable demo offline
+    App->>Endpoint: Deliver saved capture
+    Endpoint-->>App: Confirm receipt
+    Test->>App: Relaunch and check sent state/count
+```
+
+This scenario relaunches after confirmation. Interrupted-upload recovery is covered by core tests; process-kill stress validation is a separate next step. Maximum-text reachability does not establish VoiceOver or physical-camera behaviour.

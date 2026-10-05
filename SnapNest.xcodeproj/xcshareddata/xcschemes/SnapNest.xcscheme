@@ -37,6 +37,16 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "77C8798EECE06B7F1C5C1DCD"
+               BuildableName = "SnapNestUITests.xctest"
+               BlueprintName = "SnapNestUITests"
+               ReferencedContainer = "container:SnapNest.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

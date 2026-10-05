@@ -30,7 +30,7 @@ Delivery runs while the app is active, the OS reports a satisfied network path, 
 
 ![SnapNest capture screen](docs/images/capture-screen.png)
 
-Capture screen after adding native photo capture controls. Checked on the iPhone 18 Pro Max simulator, iOS 27. This shows the screen rendered; end-to-end picker/upload validation and physical camera validation remain outstanding.
+Capture screen after adding native photo capture controls. Checked on the iPhone 18 Pro Max simulator, iOS 27. This records the capture-screen stage. Later native picker/upload validation is documented in [Validation](docs/Validation.md); physical camera validation remains outstanding.
 
 ![SnapNest queue interface](docs/images/queue-screen.png)
 
@@ -46,4 +46,19 @@ Queue interface after adding history and status controls, shown with an empty qu
 | Server errors (503) | Produces the mock service-busy error; no actual HTTP response is sent. |
 | Lose response after acceptance | Commits the receipt, then reports interrupted confirmation to the client. |
 
-Settings apply to the next request; offline cancels the current worker. They reset on full relaunch while captures and receipts persist. Endpoint evidence shows the number of unique accepted IDs; repeated requests with the same ID and bytes return the existing receipt. The existing core tests cover forced offline/drop/server failures and response-loss deduplication; native controls and capture-flow UI tests arrive in the next validation step.
+Settings apply to the next request; offline cancels the current worker. They reset on full relaunch while captures and receipts persist. Endpoint evidence shows the number of unique accepted IDs; repeated requests with the same ID and bytes return the existing receipt. The existing core tests cover forced offline/drop/server failures and response-loss deduplication; native controls and capture-flow UI tests are now included in the Xcode scheme. See [Validation](docs/Validation.md) for results and limitations.
+
+## Native UI validation
+
+The shared SnapNest scheme includes `UITests/SnapNestUITests.swift`. Import the synthetic fixture into the test simulator last, then use Product → Test in Xcode or run:
+
+```sh
+xcrun simctl addmedia booted fixtures/demo-document.png
+xcodebuild -project SnapNest.xcodeproj -scheme SnapNest -destination 'platform=iOS Simulator,name=iPhone 18 Pro Max' test
+```
+
+The library test has an iOS 27 coordinate fallback for the first tile when the system picker omits its grid from the accessibility snapshot. Use a dedicated test simulator and the fixture setup above. See [Validation](docs/Validation.md) for the checked environment, results, and remaining gaps.
+
+![SnapNest at maximum accessibility text size](docs/images/maximum-text.png)
+
+Progress evidence from the successful maximum Dynamic Type UI test. Choose photo remains reachable after scrolling. On 5 October 2026, all 20 core tests and all 3 native UI tests passed; [Validation](docs/Validation.md) records the scope and remaining gaps.
