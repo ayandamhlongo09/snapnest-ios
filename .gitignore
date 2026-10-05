@@ -1,0 +1,11 @@
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+artifacts/*.mov
+artifacts/*.png
+.swiftpm/
+artifacts/
+submission/
+SignedDerivedData/
