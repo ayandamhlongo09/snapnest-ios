@@ -2,6 +2,12 @@
 
 A Swift / SwiftUI proof of concept for iiDENTIFii's capture-and-delivery problem. Capture a selfie or identity-document image; commit it locally before attempting delivery; resume safely after interruptions. The default endpoint is an **in-app mock with its own SQLite receipt database**, as allowed by the assessment. No personal data leaves the device.
 
+<p align="center">
+  <img src="docs/images/snapnest-preview.gif" alt="SnapNest launching, saving a photo offline, reconnecting and showing confirmed delivery" width="320">
+</p>
+
+Recorded on the iOS simulator: launch → save offline → reconnect → sent → relaunch.
+
 ## Run
 
 1. Open `SnapNest.xcodeproj` in Xcode (Xcode 16 or newer, Swift 6).

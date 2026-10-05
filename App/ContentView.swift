@@ -97,7 +97,19 @@ struct ContentView: View {
                 }.padding(20)
             }
             .navigationTitle("SnapNest").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .topBarTrailing) {
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    HStack(spacing: 8) {
+                        Image("SnapNestLogo")
+                            .resizable().scaledToFit()
+                            .frame(width: 30, height: 30)
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .accessibilityHidden(true)
+                        Text("SnapNest").font(.headline)
+                    }
+                    .accessibilityElement(children: .combine)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                 Button { controls = true } label: { Image(systemName: "slider.horizontal.3") }
                     .accessibilityLabel("Demo controls")
             } }

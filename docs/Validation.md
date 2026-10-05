@@ -61,3 +61,7 @@ Every acknowledged ID survived, all checked rows had a 1 MiB image/size and pend
 The recording begins with four existing accepted items, then increases to five for the selected synthetic image. The test verifies the count stays five after relaunch. Existing sample photos/history remain visible; this is not a fresh-install recording. The movie records an in-app mock, not live server delivery or process termination during a write.
 
 The existing record, inspect, trim, and submission packaging helpers are adapted to SnapNest. The recording test and video helper compilation succeeded. The package helper must run after the final files are committed so that the tracked-file archive includes the movie and final documentation. No final submission archive has been generated at this review stage.
+
+## Branding and animated README preview
+
+On 6 October 2026, the branded simulator build and build-for-testing succeeded, and the native offline-capture/reconnect/relaunch test passed again. The native launch screen and header logo were visually checked. `docs/images/snapnest-preview.gif` is a 29-second excerpt of that new recording, beginning with the blue launch screen and continuing through the real UI flow. It is exported at 320 pixels wide and ten frames per second, preserving original timing. Earlier stage screenshots and the existing submission movie remain historical evidence.

@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		195A6D7AA80742FF44E3A2A8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
+		4EA52284530DCBEDFA05DBC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D5A1A8F173134EF8F994455 /* Assets.xcassets */; };
 		5A363655B7566F642F20A75C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6CDB10F641D664919B8A94 /* ContentView.swift */; };
 		86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA4796C84E34890AF2C66B /* CaptureModel.swift */; };
 		8BA0B0A8EC7DB46F239DCA40 /* SnapNestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9724C4D9EC8576CBC6B71869 /* SnapNestUITests.swift */; };
+		9727CB439F43293ACE778321 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B367316B20FF5728C59CB92 /* LaunchScreen.storyboard */; };
 		A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */; };
 		CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
 		D8EDEBA3A728D0A5AFBD941D /* ImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */; };
@@ -28,9 +30,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1B367316B20FF5728C59CB92 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E6CDB10F641D664919B8A94 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		826C297A4FA8D450F13F75F9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		9724C4D9EC8576CBC6B71869 /* SnapNestUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapNestUITests.swift; sourceTree = "<group>"; };
+		9D5A1A8F173134EF8F994455 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B5B47A51CC8A3072148469E3 /* SnapNestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapNestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCBA4796C84E34890AF2C66B /* CaptureModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CaptureModel.swift; sourceTree = "<group>"; };
 		E15BBA30D2D4BFDF962A285D /* SnapNest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnapNest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +78,8 @@
 				F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */,
 				CCBA4796C84E34890AF2C66B /* CaptureModel.swift */,
 				E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */,
+				9D5A1A8F173134EF8F994455 /* Assets.xcassets */,
+				1B367316B20FF5728C59CB92 /* LaunchScreen.storyboard */,
 			);
 			name = App;
 			path = App;
@@ -201,6 +207,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EA52284530DCBEDFA05DBC1 /* Assets.xcassets in Resources */,
+				9727CB439F43293ACE778321 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,7 +340,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -340,7 +347,7 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a selfie or a photo of your identity document.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose a selfie or identity-document photo to save and send.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -411,7 +418,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -419,7 +425,7 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a selfie or a photo of your identity document.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose a selfie or identity-document photo to save and send.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

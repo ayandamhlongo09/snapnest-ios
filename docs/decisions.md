@@ -426,3 +426,13 @@ flowchart LR
     D --> E[Approved final commit]
     E --> F[Archive tracked files and Git history]
 ```
+
+## App branding and README preview
+
+**Concept**
+
+A shared visual identity makes the launcher, startup, and capture screen recognisable. A short README preview helps reviewers see the implemented flow before running it.
+
+**Decision**
+
+Use the same camera-and-nest logo for the launcher and beside the app name. The native launch storyboard uses a matching blue background with white text; it adds no artificial startup delay. Add a 320-pixel-wide GIF before Run in the README, sampled at ten frames per second from the passing native capture test. Trim initial test setup, retain the original sequence and speed, and keep the existing full demonstration video.
