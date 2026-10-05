@@ -215,7 +215,7 @@ Pause disables and cancels the worker, then awaits its completion before recover
 The UI needs one long-lived owner for storage, delivery, and displayed state. Redrawing a view must not create another queue worker.
 
 **Decision**
-Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration for subsequent screens, but the current interface remains the scaffold. The storage folder and monitor label use the SnapNest name.
+Reuse the existing `@MainActor` observable `CaptureModel`, owned through `@StateObject` at app level. Startup opens the queue and separate mock-receipt databases in Application Support, recovers interrupted uploads, and starts connectivity monitoring. The directory is excluded from backups and uses iOS file protection until first unlock. Published properties stay on the UI actor; database operations remain in `QueueStore`. The model includes the existing save/retry/history and failure-setting orchestration. Capture controls now call the save operation; queue history and reviewer controls arrive in subsequent steps. The storage folder and monitor label use the SnapNest name.
 
 ## Foreground and connectivity gates
 
@@ -253,3 +253,43 @@ An older asynchronous refresh can finish after a newer page or state request and
 
 **Decision**
 Collect summary, paged metadata, receipt count, and coordinator errors before publishing them together on the main actor. A refresh generation token prevents older overlapping reads from replacing a newer result. This retains the existing solution's safeguard without introducing a new UI or production refactor.
+
+## Native camera and library bridge
+
+**Concept**
+Users need to capture a selfie/document photo or choose a still image from their photo library. Cancellation should create no queue item, and denied camera permission needs a usable alternative.
+
+**Decision**
+Reuse the existing UIKit `UIImagePickerController` bridge inside SwiftUI for both sources. Prefer the front camera for selfies when available, and check/request camera permission before opening it. Denial explains that the user can enable access in Settings or choose a photo. Cancellation dismisses the picker without saving. The picker provides a decoded `UIImage`; there is no explicit input-extension allowlist or PDF/Word import. The existing working solution used this bridge after the alternative picker stalled in the simulator. Physical camera permission/capture/orientation behaviour still needs device validation.
+
+## Image preparation
+
+**Concept**
+Full-resolution camera images can consume excessive memory, disk space, and mobile data. Prepared bytes must remain consistent across upload attempts.
+
+**Decision**
+Reuse the existing image path: encode the picker image as JPEG at 90% quality, then use the `ImageProcessor` actor and ImageIO to downsample with orientation correction to a maximum 1,600-pixel dimension and encode JPEG at 80% quality. Reject processing input above 30 MiB and prepared output above 2 MiB. The 30 MiB check occurs after picker encoding; it does not bound the original asset or decoded `UIImage` memory. Initial encoding runs on the UI actor, and the second encoding can cause additional quality loss. These are existing tradeoffs, not changes introduced in this step. Save the prepared bytes once; upload retries reuse them without recompression. Document readability still needs product/device validation.
+
+```mermaid
+flowchart TD
+    A[Camera or photo library] --> B{User selects an image?}
+    B -->|Cancel| C[Dismiss without saving]
+    B -->|Yes| D[Picker JPEG encoding at 90 percent]
+    D --> E[ImageProcessor downsamples and encodes at 80 percent]
+    E --> F{Prepared image is valid and within size limit?}
+    F -->|No| G[Show preparation error]
+    F -->|Yes| H[Keep prepared bytes until save succeeds]
+    H --> I[Atomically save image and pending state]
+    I --> J{Save committed?}
+    J -->|No| K[Explain failure and offer Save photo again]
+    K --> I
+    J -->|Yes| L[Report saved and evaluate delivery]
+```
+
+## Capture save feedback
+
+**Concept**
+The UI must distinguish preparation, an uncommitted save, and a durable saved capture. A failed disk save must not silently discard the selected photo.
+
+**Decision**
+Reuse the existing two-step capture controls, busy state, and unsaved-image retry. Disable competing capture actions while preparing/saving or retaining an unsaved capture. Report saved only after `CaptureModel.save` returns success. Retain prepared bytes in memory after a save failure until another save succeeds; this is not durable protection against a process kill. Request a short UIKit background task around preparation/save for ordinary background transitions, without promising force-quit survival before commit. The native build checks compilation; the existing native picker/UI tests are introduced in the later validation step.

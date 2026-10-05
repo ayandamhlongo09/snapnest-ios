@@ -11,6 +11,7 @@
 		86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA4796C84E34890AF2C66B /* CaptureModel.swift */; };
 		A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */; };
 		CF82F2E2B699624E09E09F0F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826C297A4FA8D450F13F75F9 /* Foundation.framework */; };
+		D8EDEBA3A728D0A5AFBD941D /* ImageCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */; };
 		EF809B8B9C768C656C723142 /* CaptureCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1E26D19E15697BC47016779 /* CaptureCore */; };
 /* End PBXBuildFile section */
 
@@ -19,6 +20,7 @@
 		826C297A4FA8D450F13F75F9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		CCBA4796C84E34890AF2C66B /* CaptureModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CaptureModel.swift; sourceTree = "<group>"; };
 		E15BBA30D2D4BFDF962A285D /* SnapNest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnapNest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageCapture.swift; sourceTree = "<group>"; };
 		F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapNestApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -49,6 +51,7 @@
 				2E6CDB10F641D664919B8A94 /* ContentView.swift */,
 				F0C3A9DA30D75E9FD3979739 /* SnapNestApp.swift */,
 				CCBA4796C84E34890AF2C66B /* CaptureModel.swift */,
+				E2D21D5CB7D7F18EFE30B128 /* ImageCapture.swift */,
 			);
 			name = App;
 			path = App;
@@ -152,6 +155,7 @@
 				5A363655B7566F642F20A75C /* ContentView.swift in Sources */,
 				A714A5F588865D2EEDD6ACAB /* SnapNestApp.swift in Sources */,
 				86BB52D008AFD8A3A6C951E2 /* CaptureModel.swift in Sources */,
+				D8EDEBA3A728D0A5AFBD941D /* ImageCapture.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +232,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a selfie or a photo of your identity document.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose a selfie or identity-document photo to save and send.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
@@ -305,6 +311,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a selfie or a photo of your identity document.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose a selfie or identity-document photo to save and send.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
